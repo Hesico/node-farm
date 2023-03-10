@@ -1,0 +1,28 @@
+{
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "Aplicando os módulos do node",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hesico/node-farm.git"
+  },
+  "keywords": [
+    "JavaScrypt",
+    "node",
+    "back-end",
+    "front-end"
+  ],
+  "author": "Henrique Silva Coutinho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hesico/node-farm/issues"
+  },
+  "homepage": "https://github.com/Hesico/node-farm#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
