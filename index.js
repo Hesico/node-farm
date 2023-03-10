@@ -17,44 +17,53 @@ const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`,'ut
 const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`,'utf-8');
 
 const server = http.createServer((req,res) => {
-    pathName = req.url;
-    paths[pathName] ? paths[pathName](req,res) : pageNotFound(res);
+    const { query, pathname } = url.parse(req.url, true);
+
+    const {head, output} = paths[pathname] ? paths[pathname](query) : pageNotFound();
+
+    res.writeHead(...head);
+    res.end(output);
 })
 
 server.listen(8000,"127.0.0.1", () => {
     console.log("Server Inicializado");
 })
 
-function mainPage(req,res) {
+function mainPage() {
     const cardsHtml = dataObj.map(e => replaceTemplate(tempCard,e)).join("");
     const output = tempOverview.replace(/%PRODUCT_CARDS%/,cardsHtml)
 
-    res.writeHead(200, {
-        'Content-type': 'text/html'
-    });
-    res.end(output);
+    return {
+        head : [200,{'Content-type': 'text/html'}],
+        output
+    }
 }
 
-function productPage(req,res) {
-    res.writeHead(200, {
-        'Content-type': 'application/json'
-    });
-    res.end(data);
+function productPage(query) {
+    const product = dataObj.find(e => e.id == query.id);
+    const output = replaceTemplate(tempProduct, product);
+
+    return {
+        head : [200,{'Content-type': 'text/html'}],
+        output
+    }
 }
 
-function apiPage(req,res) {
-    console.log("pagina API");
+function apiPage() {
+    return {
+        head : [200,{'Content-type': 'application/json'}],
+        output : data
+    }
 }
 
-function pageNotFound(res){
-    res.writeHead(404, {
-        'Content-type': 'text/html',
-      });
-    res.end('<h1>Page not found!</h1>');
+function pageNotFound(){
+    return {
+        head : [404,{'Content-type': 'text/html'}],
+        output : '<h1>Page not found!</h1>'
+    }
 }
 
 function replaceTemplate(temp, product) {
-    
     let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
     output = output.replace(/{%IMAGE%}/g, product.image);
     output = output.replace(/{%PRICE%}/g, product.price);
@@ -65,6 +74,5 @@ function replaceTemplate(temp, product) {
     output = output.replace(/{%ID%}/g, product.id);
     
     if(!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-    return output;
-      
+    return output; 
 }
